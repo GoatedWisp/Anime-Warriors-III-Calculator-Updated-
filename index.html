@@ -192,7 +192,6 @@
             text-shadow: 2px 2px 0px #000;
         }
 
-        /* Dynamic Cooked System UI Component */
         .cooked-meter-box {
             background: #1a1c1e;
             border: 3px solid #000;
@@ -268,7 +267,7 @@
             <div class="input-split-row">
                 <div class="form-group">
                     <label for="totalLuckInput">Luck Multiplier</label>
-                    <input type="number" id="totalLuckInput" value="16.652" step="0.001" min="1">
+                    <input type="number" id="totalLuckInput" value="16.652" step="0.001" min="0">
                 </div>
                 <div class="form-group">
                     <label for="secretChanceInput">Secret % Stat</label>
@@ -298,7 +297,6 @@
                 </div>
             </div>
 
-            <!-- Dynamic Cooked Rating System Window -->
             <div class="cooked-meter-box" id="cookedMeter">
                 <div class="cooked-title">Gacha Status Evaluation</div>
                 <div class="cooked-status" id="cookedStatus">Awaiting Data...</div>
@@ -332,25 +330,31 @@
             const selectedKey = document.getElementById("warriorSelect").value;
             const baseDenominator = secretDatabase[selectedKey].denominator;
 
-            let baseLuck = parseFloat(document.getElementById("totalLuckInput").value) || 1.0;
+            let playerLuck = parseFloat(document.getElementById("totalLuckInput").value) || 0.0;
             let secretBonusPercent = parseFloat(document.getElementById("secretChanceInput").value) || 0.0;
             let shinyPercent = parseFloat(document.getElementById("shinyChanceInput").value) || 5.0;
             let starsToOpen = parseInt(document.getElementById("starsToOpenInput").value) || 0;
 
-            // Verified game formula math engine mapping
-            let luckMultiplierValue = 1 + ((baseLuck - 1) / 3.1); 
-            let secretMultiplierValue = 1 + (secretBonusPercent / 100);
-            let combinedWeight = luckMultiplierValue * secretMultiplierValue;
+            // 1. Get base percent chance
+            let basePercentChance = 100 / baseDenominator;
 
-            let finalStandardDenominator = Math.round(baseDenominator / combinedWeight);
+            // 2. Secret Chance multiplier handling (1 + bonus decimal)
+            let secretChanceMultiplier = 1 + (secretBonusPercent / 100);
+
+            // 3. Official developer split-path luck logic application
+            let luckMultiplier;
+            if (playerLuck <= 14) {
+                luckMultiplier = 1 + (0.1 * playerLuck);
+            } else {
+                luckMultiplier = 1.7 + (0.05 * playerLuck);
+            }
+
+            // Calculate final probability percent
+            let finalPercentChance = basePercentChance * secretChanceMultiplier * luckMultiplier;
             
-            // Hard data overrides to lock in absolute precision against user test screenshots
-            if (Math.abs(baseLuck - 16.652) < 0.01 && secretBonusPercent === 150 && selectedKey === 'naruto') {
-                finalStandardDenominator = 320492; 
-            }
-            if (Math.abs(baseLuck - 12.22) < 0.01 && secretBonusPercent === 100 && selectedKey === 'minato') {
-                finalStandardDenominator = 458399;
-            }
+            // Re-convert percent chance back into a flat denominator rate
+            let finalStandardDenominator = Math.round(100 / finalPercentChance);
+            if (finalStandardDenominator < 1) finalStandardDenominator = 1;
 
             const standardDecimalChance = 1 / finalStandardDenominator;
             const finalShinyDenominator = Math.round(finalStandardDenominator / (shinyPercent / 100));
@@ -361,7 +365,7 @@
             document.getElementById("oddsOutput").innerText = `1 in ${finalStandardDenominator.toLocaleString()}`;
             document.getElementById("shinyOddsOutput").innerText = `1 in ${finalShinyDenominator.toLocaleString()}`;
 
-            // Evaluate Cooked Level System
+            // Cooked Meter UI Render Section
             const meterBox = document.getElementById("cookedMeter");
             const statusTxt = document.getElementById("cookedStatus");
             const quoteTxt = document.getElementById("cookedQuote");
