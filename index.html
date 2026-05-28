@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anime Warriors III Odds Calculator</title>
+    <style>
+        /* Base Game Theming inspired by 3266.jpg & 3267.jpg */
+        body {
+            background-color: #0f1420;
+            background-image: linear-gradient(135deg, #0f1420 25%, #1a2233 100%);
+            font-family: 'Arial Black', 'Impact', sans-serif;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* The Main UI Window Container (Ref: 3267.jpg) */
+        .ui-container {
+            width: 100%;
+            max-width: 550px;
+            background: #23272a;
+            border: 4px solid #000000;
+            box-shadow: 0 15px 0px rgba(0,0,0,0.5);
+            position: relative;
+            user-select: none;
+        }
+
+        /* Stylized Header Banner with Sharp Angles */
+        .ui-header {
+            background: linear-gradient(90deg, #1e70ff 0%, #00d2ff 100%);
+            padding: 12px 25px;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0px #000;
+            border-bottom: 4px solid #000000;
+            clip-path: polygon(0% 0%, 100% 0%, 96% 100%, 0% 100%);
+            margin-right: 15px;
+        }
+
+        /* Red Close Diamond Button (Ref: 3267.jpg Window Element) */
+        .close-btn {
+            background: linear-gradient(135deg, #ff3b3b 0%, #9e0000 100%);
+            border: 3px solid #000;
+            width: 32px;
+            height: 32px;
+            transform: rotate(45deg);
+            position: absolute;
+            right: 12px;
+            top: 10px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 0 #000;
+        }
+        .close-btn::before {
+            content: 'X';
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            color: white;
+            font-size: 16px;
+            transform: rotate(-45deg);
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        /* Inner Body Content Window */
+        .ui-body {
+            padding: 20px;
+            background: #1c1f22;
+        }
+
+        /* Layout Elements */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        /* Two-column Input Grid Split */
+        .input-split-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .input-split-row .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        
+        label {
+            display: block;
+            text-transform: uppercase;
+            font-size: 11px;
+            color: #8da1b5;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+            text-shadow: 1px 1px 0px #000;
+        }
+
+        /* Game Stylized Input Controls */
+        select, input[type="number"] {
+            width: 100%;
+            background: #2c2f33;
+            border: 3px solid #000;
+            padding: 10px;
+            color: #fff;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 15px;
+            box-sizing: border-box;
+            outline: none;
+            border-radius: 4px;
+            text-align: center;
+        }
+        select {
+            text-align-last: center;
+        }
+        select:focus, input[type="number"]:focus {
+            border-color: #00d2ff;
+        }
+
+        /* Character Selection Grid Preview Card (Ref: 3267.jpg Grid style) */
+        .warrior-preview-card {
+            background: #121416;
+            border: 3px solid #000;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .avatar-box {
+            width: 54px;
+            height: 54px;
+            background: linear-gradient(135deg, #a335ee 0%, #4a157d 100%);
+            border: 3px solid #ffcc00;
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            box-shadow: inset 0 0 8px rgba(255,255,255,0.4);
+        }
+        .target-details h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #ffcc00;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 0 #000;
+        }
+        .target-details p {
+            margin: 2px 0 0 0;
+            font-size: 11px;
+            color: #a0a0a0;
+        }
+
+        /* High Energy Gold Action Button */
+        .calc-btn {
+            width: 100%;
+            background: linear-gradient(180deg, #ffcc00 0%, #ff9900 100%);
+            border: 4px solid #000;
+            padding: 12px;
+            color: #000;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 20px;
+            text-transform: uppercase;
+            cursor: pointer;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 0 #000;
+            margin-bottom: 20px;
+            transition: transform 0.1s;
+        }
+        .calc-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #000;
+        }
+
+        /* Side-by-Side Results Panels */
+        .results-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .results-panel {
+            flex: 1;
+            background: #121416;
+            border: 4px solid #000;
+            padding: 15px 10px;
+            text-align: center;
+        }
+        .results-panel.shiny-panel {
+            border-color: #ffcc00;
+        }
+        .results-title {
+            font-size: 11px;
+            color: #00d2ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        .shiny-panel .results-title {
+            color: #ffcc00;
+        }
+        .odds-display {
+            font-size: 22px;
+            color: #fff;
+            text-shadow: 2px 2px 0px #000;
+            margin-bottom: 5px;
+            word-break: break-word;
+        }
+        .percent-display {
+            font-size: 14px;
+            color: #22c55e;
+            text-shadow: 1px 1px 0px #000;
+        }
+        .shiny-panel .percent-display {
+            color: #ff3b3b;
+        }
+
+        /* Simulator Prediction Output Card */
+        .sim-panel {
+            background: #2a1b40;
+            border: 3px solid #a335ee;
+            padding: 15px;
+            text-align: center;
+            border-radius: 6px;
+            margin-bottom: 25px;
+        }
+        .sim-title {
+            font-size: 12px;
+            color: #dcb3ff;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .sim-output {
+            font-size: 26px;
+            color: #ffcc00;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        /* Bottom Explanation Box (Help Guide) */
+        .explanation-box {
+            background: #15171a;
+            border-left: 5px solid #1e70ff;
+            padding: 15px;
+            font-family: 'Arial', sans-serif;
+            font-size: 13px;
+            color: #b9c4cf;
+            line-height: 1.5;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 20px;
+        }
+        .explanation-box h4 {
+            margin: 0 0 8px 0;
+            color: #fff;
+            text-transform: uppercase;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+        .explanation-box ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .explanation-box li {
+            margin-bottom: 6px;
+        }
+        .explanation-box strong {
+            color: #00d2ff;
+        }
+
+        /* Bottom Left Watermark Credit Styling */
+        .watermark {
+            font-family: 'Arial', sans-serif;
+            font-size: 11px;
+            color: #63707e;
+            text-align: left;
+            padding-left: 5px;
+        }
+        .watermark a {
+            color: #ffcc00;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        .watermark a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 5px #ffcc00;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ui-container">
+        <div class="ui-header">
+            <span>Warriors Master Calc</span>
+        </div>
+        <div class="close-btn"></div>
+
+        <div class="ui-body">
+            <!-- Target Selection -->
+            <div class="form-group">
+                <label for="warriorSelect">Select Target Warrior</label>
+                <select id="warriorSelect" onchange="updateCardPreview()">
+                    <option value="broly">Broly (Secret)</option>
+                    <option value="vegita">Vegita (Secret)</option>
+                    <option value="minato" selected>Minato Namikaze (Secret)</option>
+                    <option value="mihawk">Mihawk (Secret)</option>
+                    <option value="naruto">Naruto Beast (Secret)</option>
+                </select>
+            </div>
+
+            <!-- Dynamic Card Preview Component -->
+            <div class="warrior-preview-card">
+                <div class="avatar-box" id="cardIcon">⚡</div>
+                <div class="target-details">
+                    <h3 id="cardName">Minato Namikaze</h3>
+                    <p id="cardBaseOdds">Base Odds: 1 in 1,431,762</p>
+                </div>
+            </div>
+
+            <!-- Parameter Inputs split side-by-side -->
+            <div class="input-split-row">
+                <div class="form-group">
+                    <label for="totalLuckInput">Total Current Luck</label>
+                    <input type="number" id="totalLuckInput" value="3.298" step="0.001" min="0.001">
+                </div>
+                <div class="form-group">
+                    <label for="shinyChanceInput">Shiny Roll Rate (%)</label>
+                    <input type="number" id="shinyChanceInput" value="5.0" step="0.1" min="0.001" max="100">
+                </div>
+            </div>
+
+            <!-- Total Stars Grinding Input Field (Simulator Step) -->
+            <div class="form-group">
+                <label for="starsToOpenInput">Amount of Stars to Open (Grind Budget)</label>
+                <input type="number" id="starsToOpenInput" value="50000" step="1000" min="1">
+            </div>
+
+            <!-- Calculate Action Trigger -->
+            <button class="calc-btn" onclick="calculateFinalOdds()">Calculate Odds</button>
+
+            <!-- Dual Results Panels -->
+            <div class="results-container">
+                <!-- Standard Edition Output Column -->
+                <div class="results-panel">
+                    <div class="results-title">Standard Variant</div>
+                    <div class="odds-display" id="oddsOutput">1 in --</div>
+                    <div class="percent-display" id="percentOutput">--%</div>
+                </div>
+                
+                <!-- Shiny Edition Output Column -->
+                <div class="results-panel shiny-panel">
+                    <div class="results-title">✨ Shiny Variant ✨</div>
+                    <div class="odds-display" id="shinyOddsOutput">1 in --</div>
+                    <div class="percent-display" id="shinyPercentOutput">--%</div>
+                </div>
+            </div>
+
+            <!-- Simulator Total Real Hit Probability Output Card -->
+            <div class="sim-panel">
+                <div class="sim-title">Estimated Success Chance across your Star Budget</div>
+                <div class="sim-output" id="simOutput">0.00% Real Pull Probability</div>
+            </div>
+
+            <!-- Simple Explanation Documentation Footnote Guide -->
+            <div class="explanation-box">
+                <h4>💡 Quick Usage Guide</h4>
+                <ul>
+                    <li><strong>Total Current Luck:</strong> Enter your total combined luck directly from your in-game profile page.</li>
+                    <li><strong>Shiny Roll Rate (%):</strong> The default percentage check rolled whenever a Secret drops to see if it turns Shiny.</li>
+                    <li><strong>Star Budget Simulator:</strong> Shows your real cumulative probability. Instead of guessing, it tells you exactly how likely you are to drop the standard Secret based on the total number of Stars you intend to spend!</li>
+                </ul>
+            </div>
+
+            <!-- Bottom Left Watermark Credit Label -->
+            <div class="watermark">
+                Made by: <a href="https://www.roblox.com/users/10629544302/profile" target="_blank">GoatedWisp</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const secretDatabase = {
+            broly: { name: "Broly", denominator: 975762, icon: "☄️" },
+            vegita: { name: "Vegita", denominator: 1144165, icon: "👑" },
+            minato: { name: "Minato Namikaze", denominator: 1431762, icon: "⚡" },
+            mihawk: { name: "Mihawk", denominator: 1712915, icon: "⚔️" },
+            naruto: { name: "Naruto (Beast)", denominator: 2028912, icon: "🦊" }
+        };
+
+        function updateCardPreview() {
+            const selectedKey = document.getElementById("warriorSelect").value;
+            const item = secretDatabase[selectedKey];
+            
+            document.getElementById("cardName").innerText = item.name;
+            document.getElementById("cardIcon").innerText = item.icon;
+            document.getElementById("cardBaseOdds").innerText = `Base Odds: 1 in ${item.denominator.toLocaleString()}`;
+        }
+
+        function calculateFinalOdds() {
+            const selectedKey = document.getElementById("warriorSelect").value;
+            const baseDenominator = secretDatabase[selectedKey].denominator;
+
+            // Gather values
+            let totalLuck = parseFloat(document.getElementById("totalLuckInput").value) || 1.0;
+            let shinyPercent = parseFloat(document.getElementById("shinyChanceInput").value) || 5.0;
+            let starsToOpen = parseInt(document.getElementById("starsToOpenInput").value) || 0;
+
+            const shinyDecimal = shinyPercent / 100;
+
+            // 1. Calculations standard layer
+            const finalStandardDenominator = Math.round(baseDenominator / totalLuck);
+            const standardDecimalChance = 1 / finalStandardDenominator;
+            const finalStandardPercentage = (standardDecimalChance * 100).toFixed(6);
+
+            // 2. Calculations shiny layer
+            const finalShinyDenominator = Math.round(finalStandardDenominator / shinyDecimal);
+            const finalShinyPercentage = (100 / finalShinyDenominator).toFixed(6);
+
+            // 3. Cumulative Math Star Simulator: P(at least 1) = 1 - (1 - standard_p)^n
+            const probabilityOfFailure = Math.pow(1 - standardDecimalChance, starsToOpen);
+            const cumulativeSuccessPercentage = ((1 - probabilityOfFailure) * 100).toFixed(2);
+
+            // Print variant outputs
+            document.getElementById("oddsOutput").innerText = `1 in ${finalStandardDenominator.toLocaleString()}`;
+            document.getElementById("percentOutput").innerText = `${finalStandardPercentage}%`;
+
+            document.getElementById("shinyOddsOutput").innerText = `1 in ${finalShinyDenominator.toLocaleString()}`;
+            document.getElementById("shinyPercentOutput").innerText = `${finalShinyPercentage}%`;
+
+            // Print simulation cumulative output
+            document.getElementById("simOutput").innerText = `${cumulativeSuccessPercentage}% Pull Probability`;
+        }
+
+        // Initialize view sets
+        updateCardPreview();
+        calculateFinalOdds();
+    </script>
+</body>
+</html>
