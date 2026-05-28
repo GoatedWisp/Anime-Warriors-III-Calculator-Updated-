@@ -192,37 +192,6 @@
             text-shadow: 2px 2px 0px #000;
         }
 
-        .cooked-meter-box {
-            background: #1a1c1e;
-            border: 3px solid #000;
-            padding: 15px;
-            text-align: center;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        .cooked-title {
-            font-size: 12px;
-            color: #a0a0a0;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-        }
-        .cooked-status {
-            font-size: 24px;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 0px #000;
-            margin-bottom: 8px;
-        }
-        .cooked-quote {
-            font-family: 'Arial', sans-serif;
-            font-size: 13px;
-            color: #d1d5db;
-            font-style: italic;
-            border-top: 1px dashed #3f444e;
-            padding-top: 8px;
-            margin-top: 5px;
-        }
-
         .watermark {
             font-family: 'Arial', sans-serif;
             font-size: 11px;
@@ -297,12 +266,6 @@
                 </div>
             </div>
 
-            <div class="cooked-meter-box" id="cookedMeter">
-                <div class="cooked-title">Gacha Status Evaluation</div>
-                <div class="cooked-status" id="cookedStatus">Awaiting Data...</div>
-                <div class="cooked-quote" id="cookedQuote">"Enter your grinding stats to see if you're cooked."</div>
-            </div>
-
             <div class="watermark">
                 Made by: <a href="https://www.roblox.com/users/10629544302/profile" target="_blank">GoatedWisp</a>
             </div>
@@ -333,7 +296,6 @@
             let playerLuck = parseFloat(document.getElementById("totalLuckInput").value) || 0.0;
             let secretBonusPercent = parseFloat(document.getElementById("secretChanceInput").value) || 0.0;
             let shinyPercent = parseFloat(document.getElementById("shinyChanceInput").value) || 5.0;
-            let starsToOpen = parseInt(document.getElementById("starsToOpenInput").value) || 0;
 
             // 1. Get base percent chance
             let basePercentChance = 100 / baseDenominator;
@@ -352,50 +314,14 @@
             // Calculate final probability percent
             let finalPercentChance = basePercentChance * secretChanceMultiplier * luckMultiplier;
             
-            // Re-convert percent chance back into a flat denominator rate
+            // Convert percent chance back into a flat denominator rate
             let finalStandardDenominator = Math.round(100 / finalPercentChance);
             if (finalStandardDenominator < 1) finalStandardDenominator = 1;
 
-            const standardDecimalChance = 1 / finalStandardDenominator;
             const finalShinyDenominator = Math.round(finalStandardDenominator / (shinyPercent / 100));
-
-            const probabilityOfFailure = Math.pow(1 - standardDecimalChance, starsToOpen);
-            const cumulativeSuccessPercentage = (1 - probabilityOfFailure) * 100;
 
             document.getElementById("oddsOutput").innerText = `1 in ${finalStandardDenominator.toLocaleString()}`;
             document.getElementById("shinyOddsOutput").innerText = `1 in ${finalShinyDenominator.toLocaleString()}`;
-
-            // Cooked Meter UI Render Section
-            const meterBox = document.getElementById("cookedMeter");
-            const statusTxt = document.getElementById("cookedStatus");
-            const quoteTxt = document.getElementById("cookedQuote");
-
-            if (cumulativeSuccessPercentage <= 12) {
-                statusTxt.innerText = "🔥 UTTERLY COOKED 🔥";
-                statusTxt.style.color = "#ff3b3b";
-                meterBox.style.border = "3px solid #ff3b3b";
-                quoteTxt.innerHTML = `GoatedWisp says: Your success chance is only <strong>${cumulativeSuccessPercentage.toFixed(2)}%</strong>. Save your stars, bro, you are walking into a complete trap. 😭`;
-            } else if (cumulativeSuccessPercentage <= 35) {
-                statusTxt.innerText = "💀 COPPING DELUSION 💀";
-                statusTxt.style.color = "#a335ee";
-                meterBox.style.border = "3px solid #a335ee";
-                quoteTxt.innerHTML = `GoatedWisp says: <strong>${cumulativeSuccessPercentage.toFixed(2)}%</strong> probability. You're praying to the RNG gods on pure cope right now.`;
-            } else if (cumulativeSuccessPercentage <= 65) {
-                statusTxt.innerText = "⚖️ COIN FLIP ⚖️";
-                statusTxt.style.color = "#00d2ff";
-                meterBox.style.border = "3px solid #00d2ff";
-                quoteTxt.innerHTML = `GoatedWisp says: <strong>${cumulativeSuccessPercentage.toFixed(2)}%</strong> chance. Perfectly balanced. It either drops or it doesn't. Let it rip!`;
-            } else if (cumulativeSuccessPercentage <= 88) {
-                statusTxt.innerText = "✨ BLESSED SEED ✨";
-                statusTxt.style.color = "#ffcc00";
-                meterBox.style.border = "3px solid #ffcc00";
-                quoteTxt.innerHTML = `GoatedWisp says: <strong>${cumulativeSuccessPercentage.toFixed(2)}%</strong> chance! Your account is officially blessed right now, open them up!`;
-            } else {
-                statusTxt.innerText = "👑 THE CHOSEN ONE 👑";
-                statusTxt.style.color = "#ffffff";
-                meterBox.style.border = "3px solid #ffffff";
-                quoteTxt.innerHTML = `GoatedWisp says: <strong>${cumulativeSuccessPercentage.toFixed(2)}%</strong> absolute guarantee! The game might as well hand you the character right now.`;
-            }
         }
 
         updateCardPreview();
@@ -403,4 +329,3 @@
     </script>
 </body>
 </html>
-
