@@ -362,7 +362,8 @@
                             <option value="6">6 Stars</option>
                             <option value="7">7 Stars</option>
                             <option value="8">8 Stars</option>
-                            <option value="9" selected>9 Stars</option>
+                            <option value="9">9 Stars</option>
+                            <option value="10" selected>10 Stars</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -465,13 +466,9 @@
                 return;
             }
 
-            // 1. Calculate how many individual batch animation cycles are required
             let totalCycles = Math.ceil(totalStars / batchSize);
-
-            // 2. Map cycles back to real-time clock seconds
             let totalSeconds = Math.ceil(totalCycles * cycleSeconds);
 
-            // 3. Destructure seconds across full day blocks
             let days = Math.floor(totalSeconds / 86400);
             totalSeconds %= 86400;
             let hours = Math.floor(totalSeconds / 3600);
