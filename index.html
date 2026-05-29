@@ -66,9 +66,45 @@
             text-shadow: 1px 1px 0 #000;
         }
 
+        .view-menu {
+            display: flex;
+            background: #17191c;
+            border-bottom: 4px solid #000;
+        }
+        .menu-btn {
+            flex: 1;
+            padding: 12px;
+            background: #1c1f22;
+            color: #8da1b5;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 12px;
+            text-transform: uppercase;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            border-right: 2px solid #000;
+            transition: all 0.2s ease;
+        }
+        .menu-btn:last-child {
+            border-right: none;
+        }
+        .menu-btn.active {
+            background: #2c2f33;
+            color: #ffcc00;
+            text-shadow: 1px 1px 0 #000;
+            box-shadow: inset 0 -4px 0 #ffcc00;
+        }
+
         .ui-body {
             padding: 20px;
             background: #1c1f22;
+        }
+
+        .view-panel {
+            display: none;
+        }
+        .view-panel.active {
+            display: block;
         }
 
         .form-group {
@@ -111,6 +147,12 @@
         select {
             text-align-last: center;
             padding: 10px;
+        }
+        input::placeholder {
+            color: #4f5660;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 12px;
         }
 
         .warrior-preview-card {
@@ -168,7 +210,7 @@
         .results-container {
             display: flex;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .results-panel {
             flex: 1;
@@ -192,11 +234,34 @@
             text-shadow: 2px 2px 0px #000;
         }
 
+        .display-box {
+            background: #121416;
+            border: 3px solid #000;
+            padding: 15px;
+            text-align: center;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .display-title {
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            font-size: 11px;
+        }
+        .display-value {
+            font-size: 26px;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .color-pull { color: #00ffcc; }
+        .color-time { color: #ff5555; }
+
         .watermark {
             font-family: 'Arial', sans-serif;
             font-size: 11px;
             color: #63707e;
             text-align: left;
+            margin-top: 5px;
         }
         .watermark a {
             color: #ffcc00;
@@ -213,56 +278,104 @@
         </div>
         <div class="close-btn"></div>
 
+        <div class="view-menu">
+            <button class="menu-btn active" onclick="switchView('calcView', this)">Odds Calculator</button>
+            <button class="menu-btn" onclick="switchView('timeView', this)">Time Estimator</button>
+        </div>
+
         <div class="ui-body">
-            <div class="form-group">
-                <label for="warriorSelect">Select Target Warrior</label>
-                <select id="warriorSelect" onchange="updateCardPreview()">
-                    <option value="broly">Broly (Secret)</option>
-                    <option value="vegita">Vegita (Secret)</option>
-                    <option value="minato">Minato Namikaze (Secret)</option>
-                    <option value="mihawk">Mihawk (Secret)</option>
-                    <option value="naruto" selected>Naruto Beast (Secret)</option>
-                </select>
-            </div>
-
-            <div class="warrior-preview-card">
-                <div class="avatar-box" id="cardIcon">🦊</div>
-                <div class="target-details">
-                    <h3 id="cardName">Naruto Beast</h3>
-                    <p id="cardBaseOdds">Base Odds: 1 in 2,028,912</p>
-                </div>
-            </div>
-
-            <div class="input-split-row">
+            
+            <!-- VIEW 1: ODDS CALCULATOR -->
+            <div id="calcView" class="view-panel active">
                 <div class="form-group">
-                    <label for="totalLuckInput">Luck Multiplier</label>
-                    <input type="number" id="totalLuckInput" value="16.652" step="0.001" min="0">
+                    <label for="warriorSelect">Select Target Warrior</label>
+                    <select id="warriorSelect" onchange="updateCardPreview()">
+                        <option value="broly">Broly (Secret)</option>
+                        <option value="vegita">Vegita (Secret)</option>
+                        <option value="minato">Minato Namikaze (Secret)</option>
+                        <option value="mihawk">Mihawk (Secret)</option>
+                        <option value="naruto" selected>Naruto Beast (Secret)</option>
+                    </select>
                 </div>
-                <div class="form-group">
-                    <label for="secretChanceInput">Secret % Stat</label>
-                    <input type="number" id="secretChanceInput" value="150" step="1" min="0">
+
+                <div class="warrior-preview-card">
+                    <div class="avatar-box" id="cardIcon">🦊</div>
+                    <div class="target-details">
+                        <h3 id="cardName">Naruto Beast</h3>
+                        <p id="cardBaseOdds">Base Odds: 1 in 2,028,912</p>
+                    </div>
                 </div>
+
+                <div class="input-split-row">
+                    <div class="form-group">
+                        <label for="totalLuckInput">Luck Multiplier</label>
+                        <input type="number" id="totalLuckInput" placeholder="e.g. 16.65" step="0.001" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="secretChanceInput">Secret % Stat</label>
+                        <input type="number" id="secretChanceInput" placeholder="e.g. 150" step="1" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="shinyChanceInput">Shiny Roll %</label>
+                        <input type="number" id="shinyChanceInput" placeholder="e.g. 5.0" step="0.1" min="0.01">
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label for="shinyChanceInput">Shiny Roll %</label>
-                    <input type="number" id="shinyChanceInput" value="5.0" step="0.1" min="0.01">
+                    <label for="starsToOpenInput">Amount of Stars to Open</label>
+                    <input type="number" id="starsToOpenInput" placeholder="e.g. 1500000" step="50000" min="1">
+                </div>
+
+                <button class="calc-btn" onclick="calculateFinalOdds()">Calculate Odds</button>
+
+                <div class="results-container">
+                    <div class="results-panel">
+                        <div class="results-title">Standard Variant</div>
+                        <div class="odds-display" id="oddsOutput">1 in --</div>
+                    </div>
+                    <div class="results-panel shiny-panel">
+                        <div class="results-title">✨ Shiny Variant ✨</div>
+                        <div class="odds-display" id="shinyOddsOutput">1 in --</div>
+                    </div>
+                </div>
+
+                <div class="display-box">
+                    <div class="display-title" style="color: #ff9900;">Chance to Pull within Chosen Opens</div>
+                    <div class="display-value color-pull" id="pullRateOutput">--%</div>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="starsToOpenInput">Amount of Stars to Open</label>
-                <input type="number" id="starsToOpenInput" value="50000" step="1000" min="1">
-            </div>
-
-            <button class="calc-btn" onclick="calculateFinalOdds()">Calculate Odds</button>
-
-            <div class="results-container">
-                <div class="results-panel">
-                    <div class="results-title">Standard Variant</div>
-                    <div class="odds-display" id="oddsOutput">1 in --</div>
+            <!-- VIEW 2: ESTIMATED TIME TO HATCH -->
+            <div id="timeView" class="view-panel">
+                <div class="form-group">
+                    <label for="timeStarsInput">Total Stars Planned to Hatch</label>
+                    <input type="number" id="timeStarsInput" placeholder="e.g. 3500000" step="50000" min="1">
                 </div>
-                <div class="results-panel shiny-panel">
-                    <div class="results-title">✨ Shiny Variant ✨</div>
-                    <div class="odds-display" id="shinyOddsOutput">1 in --</div>
+
+                <div class="input-split-row">
+                    <div class="form-group">
+                        <label for="batchSizeSelect">Stars Opened per Roll</label>
+                        <select id="batchSizeSelect">
+                            <option value="3">3 Stars</option>
+                            <option value="4">4 Stars</option>
+                            <option value="5">5 Stars</option>
+                            <option value="6">6 Stars</option>
+                            <option value="7">7 Stars</option>
+                            <option value="8">8 Stars</option>
+                            <option value="9" selected>9 Stars</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cycleTimeInput">Animation Cycle (Secs)</label>
+                        <input type="number" id="cycleTimeInput" placeholder="e.g. 2.5" step="0.05" min="0.01">
+                    </div>
+                </div>
+
+                <button class="calc-btn" onclick="calculateHatchTime()">Estimate Time</button>
+
+                <div class="display-box">
+                    <div class="display-title" style="color: #00d2ff;">Estimated Hatch Duration</div>
+                    <div class="display-value color-time" id="timeOutput">--d --h --m --s</div>
                 </div>
             </div>
 
@@ -281,6 +394,14 @@
             naruto: { name: "Naruto (Beast)", denominator: 2028912, icon: "🦊" }
         };
 
+        function switchView(viewId, buttonEl) {
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(viewId).classList.add('active');
+            buttonEl.classList.add('active');
+        }
+
         function updateCardPreview() {
             const selectedKey = document.getElementById("warriorSelect").value;
             const item = secretDatabase[selectedKey];
@@ -293,17 +414,21 @@
             const selectedKey = document.getElementById("warriorSelect").value;
             const baseDenominator = secretDatabase[selectedKey].denominator;
 
-            let playerLuck = parseFloat(document.getElementById("totalLuckInput").value) || 0.0;
-            let secretBonusPercent = parseFloat(document.getElementById("secretChanceInput").value) || 0.0;
-            let shinyPercent = parseFloat(document.getElementById("shinyChanceInput").value) || 5.0;
+            let playerLuck = parseFloat(document.getElementById("totalLuckInput").value);
+            let secretBonusPercent = parseFloat(document.getElementById("secretChanceInput").value);
+            let shinyPercent = parseFloat(document.getElementById("shinyChanceInput").value);
+            let starsToOpen = parseInt(document.getElementById("starsToOpenInput").value);
 
-            // 1. Get base percent chance
+            if (isNaN(playerLuck) || isNaN(secretBonusPercent) || isNaN(shinyPercent)) {
+                document.getElementById("oddsOutput").innerText = "1 in --";
+                document.getElementById("shinyOddsOutput").innerText = "1 in --";
+                document.getElementById("pullRateOutput").innerText = "--%";
+                return;
+            }
+
             let basePercentChance = 100 / baseDenominator;
-
-            // 2. Secret Chance multiplier handling (1 + bonus decimal)
             let secretChanceMultiplier = 1 + (secretBonusPercent / 100);
 
-            // 3. Official developer split-path luck logic application
             let luckMultiplier;
             if (playerLuck <= 14) {
                 luckMultiplier = 1 + (0.1 * playerLuck);
@@ -311,10 +436,7 @@
                 luckMultiplier = 1.7 + (0.05 * playerLuck);
             }
 
-            // Calculate final probability percent
             let finalPercentChance = basePercentChance * secretChanceMultiplier * luckMultiplier;
-            
-            // Convert percent chance back into a flat denominator rate
             let finalStandardDenominator = Math.round(100 / finalPercentChance);
             if (finalStandardDenominator < 1) finalStandardDenominator = 1;
 
@@ -322,10 +444,51 @@
 
             document.getElementById("oddsOutput").innerText = `1 in ${finalStandardDenominator.toLocaleString()}`;
             document.getElementById("shinyOddsOutput").innerText = `1 in ${finalShinyDenominator.toLocaleString()}`;
+
+            if (!isNaN(starsToOpen) && starsToOpen > 0) {
+                const individualDecimalChance = 1 / finalStandardDenominator;
+                const failureProbability = Math.pow(1 - individualDecimalChance, starsToOpen);
+                const absolutePullRatePercentage = (1 - failureProbability) * 100;
+                document.getElementById("pullRateOutput").innerText = `${absolutePullRatePercentage.toFixed(2)}%`;
+            } else {
+                document.getElementById("pullRateOutput").innerText = "--%";
+            }
+        }
+
+        function calculateHatchTime() {
+            let totalStars = parseInt(document.getElementById("timeStarsInput").value);
+            let batchSize = parseInt(document.getElementById("batchSizeSelect").value);
+            let cycleSeconds = parseFloat(document.getElementById("cycleTimeInput").value);
+
+            if (isNaN(totalStars) || isNaN(cycleSeconds) || cycleSeconds <= 0 || totalStars <= 0) {
+                document.getElementById("timeOutput").innerText = "--d --h --m --s";
+                return;
+            }
+
+            // 1. Calculate how many individual batch animation cycles are required
+            let totalCycles = Math.ceil(totalStars / batchSize);
+
+            // 2. Map cycles back to real-time clock seconds
+            let totalSeconds = Math.ceil(totalCycles * cycleSeconds);
+
+            // 3. Destructure seconds across full day blocks
+            let days = Math.floor(totalSeconds / 86400);
+            totalSeconds %= 86400;
+            let hours = Math.floor(totalSeconds / 3600);
+            totalSeconds %= 3600;
+            let minutes = Math.floor(totalSeconds / 60);
+            let seconds = totalSeconds % 60;
+
+            let formattedTime = "";
+            if (days > 0) formattedTime += `${days}d `;
+            if (hours > 0 || days > 0) formattedTime += `${hours}h `;
+            if (minutes > 0 || hours > 0 || days > 0) formattedTime += `${minutes}m `;
+            formattedTime += `${seconds}s`;
+
+            document.getElementById("timeOutput").innerText = formattedTime.trim();
         }
 
         updateCardPreview();
-        calculateFinalOdds();
     </script>
 </body>
 </html>
